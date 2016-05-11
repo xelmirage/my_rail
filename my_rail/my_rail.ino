@@ -9,7 +9,7 @@
 #define KEY_RIGHT 4
 #define KEY_CENTER 5
 
-
+#define STAT_IDLE 0
 #define STAT_INTVL 1
 #define STAT_EXP 2
 #define STAT_STEP 3

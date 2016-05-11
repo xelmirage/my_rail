@@ -1,4 +1,4 @@
-
+#include <Wire.h> 
 #include <Stepper.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -44,6 +44,9 @@ int JoyStick_Z = 3; // key
 int triggerPin = 9; // key
 int totalstep = 0;
 void forward()
+{
+  
+}
 
 
 
@@ -220,6 +223,7 @@ void triggerkeypressed()
 
   }
   digitalWrite(triggerPin, LOW);
+  
 }
 
 

@@ -76,9 +76,13 @@ void forward(int steps)
 		lcd.setCursor(12, 1);
 		lcd.print("    ");
 		lcd.setCursor(12, 1);
-		lcd.print(i + 1);
+		lcd.print(i );
 		totalstep++;
 	}
+	lcd.setCursor(12, 1);
+	lcd.print("    ");
+	lcd.setCursor(12, 1);
+	lcd.print(i);
 	totalstep = 0;
 
 }
@@ -86,6 +90,10 @@ void forward(int steps)
 void expose(int time)
 {
 	int i;
+	lcd.setCursor(6, 1);
+	lcd.print("    ");
+	lcd.setCursor(6, 1);
+	lcd.print("SHOOT");
 	delay(400);
 	digitalWrite(triggerPin, HIGH);
 	delay(200);
@@ -94,12 +102,16 @@ void expose(int time)
 	delay(400);
 	for (i = 0; i < time; ++i)
 	{
-		lcd.setCursor(7, 1);
-		lcd.print("   ");
+		lcd.setCursor(6, 1);
+		lcd.print("     ");
 		lcd.setCursor(7, 1);
 		lcd.print(i );
 		delay(1000);
 	}
+	lcd.setCursor(6, 1);
+	lcd.print("     ");
+	lcd.setCursor(7, 1);
+	lcd.print(i);
 
 }
 void stay(int time)
@@ -113,6 +125,10 @@ void stay(int time)
 		lcd.print(i );
 		delay(1000);
 	}
+	lcd.setCursor(0, 1);
+	lcd.print("     ");
+	lcd.setCursor(0, 1);
+	lcd.print(i);
 }
 
 

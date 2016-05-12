@@ -14,9 +14,11 @@
 #define STAT_EXP 2
 #define STAT_STEP 3
 
+int intvl_time = 5;
+int exp_time = 1;
+int step = 5;
 
-
-
+int current_stat = 1;
 
 
 uint8_t uiKeyCodeFirst = KEY_NONE;
@@ -25,7 +27,7 @@ uint8_t uiKeyCode = KEY_NONE;
 
 
 uint8_t menu_current = 0;
-uint8_t menu_redraw_required = 0;
+uint8_t menu_redraw_required = 1;
 uint8_t last_key_code = KEY_NONE;
 
 
@@ -43,60 +45,127 @@ int JoyStick_Z = 3; // key
 
 int triggerPin = 9; // key
 int totalstep = 0;
-void forward()
+
+
+void keypressed()
 {
-  
+	isRun = false;
+}
+void triggerkeypressed()
+{
+	int i;
+	digitalWrite(triggerPin, HIGH);
+	for (i = 1; i < 1000; ++i)
+	{
+
+	}
+	digitalWrite(triggerPin, LOW);
+
 }
 
 
 
+
+void forward(int steps)
+{
+	int i;
+	totalstep = 0;
+	for (i = 0; i < steps; ++i)
+	{
+		myStepper.step(1);
+		lcd.setCursor(12, 1);
+		lcd.print("    ");
+		lcd.setCursor(12, 1);
+		lcd.print(i + 1);
+		totalstep++;
+	}
+	totalstep = 0;
+
+}
+
+void expose(int time)
+{
+	int i;
+	delay(100);
+	digitalWrite(triggerPin, HIGH);
+	delay(200);
+	digitalWrite(triggerPin, LOW);
+	totalstep = 0;
+	delay(100);
+	for (i = 0; i < time; ++i)
+	{
+		lcd.setCursor(7, 1);
+		lcd.print("   ");
+		lcd.setCursor(7, 1);
+		lcd.print(i );
+		delay(1000);
+	}
+
+}
+void stay(int time)
+{
+	int i;
+	for (i = 0; i < time; ++i)
+	{
+		lcd.setCursor(0, 1);
+		lcd.print("     ");
+		lcd.setCursor(0, 1);
+		lcd.print(i );
+		delay(1000);
+	}
+}
+
+
+
+
+
 void uiStep(void) {
-  uiKeyCodeSecond = uiKeyCodeFirst;
-  int x, y, z, stick_value;
-  x = analogRead (JoyStick_X) - 512;
-  y = analogRead (JoyStick_Y) - 512;
-  z = digitalRead (JoyStick_Z);
+	uiKeyCodeSecond = uiKeyCodeFirst;
+	int x, y, z, stick_value;
+	x = analogRead(JoyStick_X) - 512;
+	y = analogRead(JoyStick_Y) - 512;
+	z = digitalRead(JoyStick_Z);
 
-  if (abs(x) > 250 || abs(y) > 250)
-  {
-    if (abs(x) > abs(y))
-    {
-      if (x > 0)
-      {
-        uiKeyCodeFirst = KEY_RIGHT;
-      }
-      else if (x < 0)
-      {
-        uiKeyCodeFirst = KEY_LEFT;
-      }
+	if (abs(x) > 250 || abs(y) > 250)
+	{
+		if (abs(x) > abs(y))
+		{
+			if (x > 0)
+			{
+				uiKeyCodeFirst = KEY_RIGHT;
+			}
+			else if (x < 0)
+			{
+				uiKeyCodeFirst = KEY_LEFT;
+			}
 
 
-    }
-    else if (abs(x) < abs(y))
-    {
-      if (y > 0)
-      {
-        uiKeyCodeFirst = KEY_UP;
-      }
-      else if (y < 0)
-      {
-        uiKeyCodeFirst = KEY_DOWN;
-      }
+		}
+		else if (abs(x) < abs(y))
+		{
+			if (y > 0)
+			{
+				uiKeyCodeFirst = KEY_UP;
+			}
+			else if (y < 0)
+			{
+				uiKeyCodeFirst = KEY_DOWN;
+			}
 
-    }
-  }
-  else if (z == 0)
-  {
-    uiKeyCodeFirst = KEY_CENTER;
-  }
-  else
-  {
-    uiKeyCodeFirst = KEY_NONE;
-  }
-  if ( uiKeyCodeSecond == uiKeyCodeFirst )
-    uiKeyCode = uiKeyCodeFirst;
-  else
-    uiKeyCode = KEY_NONE;
+		}
+	}
+	else if (z == 0)
+	{
+		uiKeyCodeFirst = KEY_CENTER;
+	}
+	else
+	{
+		uiKeyCodeFirst = KEY_NONE;
+	}
+	if (uiKeyCodeSecond == uiKeyCodeFirst)
+		uiKeyCode = uiKeyCodeFirst;
+	else
+		uiKeyCode = KEY_NONE;
 
 
 
@@ -106,124 +175,149 @@ void uiStep(void) {
 
 }
 void drawMenu(void) {
-  uint8_t i, h;
-  
-lcd.clear();
-lcd.setCursor(0,0);
-lcd.print("INTVL  EXP  STEP");
-  
-  
+	uint8_t i, h;
+
+	//lcd.clear();
+	lcd.setCursor(0, 0);
+	lcd.print("                ");
+	lcd.setCursor(0, 0);
+	lcd.print("INTVL  EXP  STEP");
+	lcd.setCursor(0, 1);
+	lcd.print(intvl_time);
+	lcd.setCursor(7, 1);
+	lcd.print(exp_time);
+	lcd.setCursor(12, 1);
+	lcd.print(step);
+	switch (current_stat) {
+	case STAT_INTVL:
+		lcd.setCursor(0, 1);
+		break;
+	case STAT_EXP:
+		lcd.setCursor(7, 1);
+		break;
+	case STAT_STEP:
+		lcd.setCursor(12, 1);
+		break;
+	}
+
+
 }
 void updateMenu(void) {
-  if ( uiKeyCode != KEY_NONE && last_key_code == uiKeyCode ) {
-    return;
-  }
-  last_key_code = uiKeyCode;
+	if (uiKeyCode != KEY_NONE && last_key_code == uiKeyCode) {
+		return;
+	}
+	last_key_code = uiKeyCode;
 
-  switch ( uiKeyCode ) {
-    case KEY_UP:
-
-      menu_redraw_required = 1;
-      break;
-    case KEY_DOWN:
-
-      menu_redraw_required = 1;
-      break;
-    case KEY_LEFT:
-
-      menu_redraw_required = 1;
-      break;
-    case KEY_RIGHT:
-
-      menu_redraw_required = 1;
-      break;
-    case KEY_CENTER:
-      isRun = !isRun;
-      menu_redraw_required = 1;
-      break;
-  }
+	switch (uiKeyCode) {
+	case KEY_UP:
+	{
+		switch (current_stat)  {
+		case STAT_INTVL:
+			intvl_time++;
+			break;
+		case STAT_EXP:
+			exp_time++;
+			break;
+		case STAT_STEP:
+			step++;
+			break;
+		}
+	}
+	menu_redraw_required = 1;
+	break;
+	case KEY_DOWN:
+		switch (current_stat) {
+		case STAT_INTVL:
+			intvl_time--;
+			break;
+		case STAT_EXP:
+			exp_time--;
+			break;
+		case STAT_STEP:
+			step--;
+			break;
+		}
+		menu_redraw_required = 1;
+		break;
+	case KEY_LEFT:
+		current_stat--;
+		if (current_stat < 1)
+		{
+			current_stat = STAT_STEP;//(3)
+		}
+		menu_redraw_required = 1;
+		break;
+	case KEY_RIGHT:
+		current_stat++;
+		if (current_stat > 3)
+		{
+			current_stat = STAT_INTVL;//(3)
+		}
+		menu_redraw_required = 1;
+		break;
+	case KEY_CENTER:
+		isRun = !isRun;
+		lcd.blink();
+		menu_redraw_required = 1;
+		break;
+	}
 }
 
 
 void setup() {
-  pinMode (JoyStick_X, INPUT);
-  pinMode (JoyStick_Y, INPUT);
-  pinMode (JoyStick_Z, INPUT_PULLUP);
-  pinMode (triggerPin, OUTPUT);
+	pinMode(JoyStick_X, INPUT);
+	pinMode(JoyStick_Y, INPUT);
+	pinMode(JoyStick_Z, INPUT_PULLUP);
+	pinMode(triggerPin, OUTPUT);
 
 
-  // set the speed at 60 rpm:
-  myStepper.setSpeed(60);
-  // initialize the serial port:
-  lcd.init(); // initialize the lcd
-  lcd.backlight(); //Open the backlight
-  attachInterrupt(0, keypressed, RISING);
-  attachInterrupt(1, triggerkeypressed, RISING);
-  isRun = false;
+	// set the speed at 60 rpm:
+	myStepper.setSpeed(60);
+	// initialize the serial port:
+	lcd.init(); // initialize the lcd
+	lcd.backlight(); //Open the backlight
+	attachInterrupt(0, keypressed, RISING);
+	attachInterrupt(1, triggerkeypressed, RISING);
+	isRun = false;
+	lcd.blink();
 }
 
 void loop() {
-  int x, y, z;
-  x = analogRead (JoyStick_X);
-  y = analogRead (JoyStick_Y);
-  z = digitalRead (JoyStick_Z);
+	int x, y, z;
+	x = analogRead(JoyStick_X);
+	y = analogRead(JoyStick_Y);
+	z = digitalRead(JoyStick_Z);
 
 
-  if (isRun == true)
-  {
-    // step one revolution  in one direction:
+	if (isRun == true)
+	{
+		stay(intvl_time);
+		expose(exp_time);
 
-    myStepper.step(1);
-    totalstep++;
+		// step one revolution  in one direction:
+		forward(step);
 
-    // step one revolution in the other direction:
-    lcd.clear();
-    lcd.print(totalstep);
-    if (totalstep == 5)
-    {
-      lcd.clear();
-      lcd.print("shot");
-      delay(500);
-      digitalWrite(triggerPin, HIGH);
-      delay(200);
-      digitalWrite(triggerPin, LOW);
-      totalstep = 0;
-      delay(500);
-      lcd.clear();
-      lcd.print("forward");
-    }
-    delay(1000);
-  }
-  else
-  {
-    uiStep();
-	
 
-    if (  menu_redraw_required != 0 ) {
-      lcd.clear();
-      lcd.print(uiKeyCode);
-      menu_redraw_required = 0;
-    }
-    updateMenu();
-  }
-  drawMenu();
-  //updateMenu();
+		// step one revolution in the other direction:
+
+
+	}
+	else
+	{
+		uiStep();
+		updateMenu();
+
+		if (menu_redraw_required != 0) {
+			drawMenu();
+			menu_redraw_required = 0;
+		}
+
+
+	}
+
+	//updateMenu();
 
 }
-void keypressed()
-{
-  isRun = false;
-}
-void triggerkeypressed()
-{
-  int i;
-  digitalWrite(triggerPin, HIGH);
-  for (i = 1; i < 1000; ++i)
-  {
 
-  }
-  digitalWrite(triggerPin, LOW);
-  
-}
 
 

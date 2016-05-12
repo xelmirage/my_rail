@@ -216,3 +216,4 @@ my_rail/__vm/Configuration.Debug.vmps.xml
 my_rail/my_rail.vcxproj.filters
 my_rail/__vm/Compile.vmps.xml
 *.sln
+my_rail/__vm/Upload.vmps.xml

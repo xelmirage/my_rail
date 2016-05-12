@@ -86,12 +86,12 @@ void forward(int steps)
 void expose(int time)
 {
 	int i;
-	delay(100);
+	delay(400);
 	digitalWrite(triggerPin, HIGH);
 	delay(200);
 	digitalWrite(triggerPin, LOW);
 	totalstep = 0;
-	delay(100);
+	delay(400);
 	for (i = 0; i < time; ++i)
 	{
 		lcd.setCursor(7, 1);
@@ -183,9 +183,15 @@ void drawMenu(void) {
 	lcd.setCursor(0, 0);
 	lcd.print("INTVL  EXP  STEP");
 	lcd.setCursor(0, 1);
+	lcd.print("     ");
+	lcd.setCursor(0, 1);
 	lcd.print(intvl_time);
 	lcd.setCursor(7, 1);
+	lcd.print("   ");
+	lcd.setCursor(7, 1);
 	lcd.print(exp_time);
+	lcd.setCursor(12, 1);
+	lcd.print("    ");
 	lcd.setCursor(12, 1);
 	lcd.print(step);
 	switch (current_stat) {
@@ -229,11 +235,14 @@ void updateMenu(void) {
 		switch (current_stat) {
 		case STAT_INTVL:
 			intvl_time--;
+			if (intvl_time < 1) intvl_time = 1;
 			break;
 		case STAT_EXP:
 			exp_time--;
+			if (exp_time < 1) exp_time = 1;
 			break;
 		case STAT_STEP:
+			if (step < 1) step = 1;
 			step--;
 			break;
 		}

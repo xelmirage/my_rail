@@ -210,3 +210,9 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+my_rail/__vm/.my_rail.vsarduino.h
+my_rail/__vm/Configuration.Debug.vmps.xml
+*.vcxproj
+my_rail/my_rail.vcxproj.filters
+my_rail/__vm/Compile.vmps.xml
+*.sln

@@ -197,7 +197,7 @@ void loop() {
   else
   {
     uiStep();
-
+	
 
     if (  menu_redraw_required != 0 ) {
       lcd.clear();

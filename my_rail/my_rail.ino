@@ -63,7 +63,40 @@ void triggerkeypressed()
 
 }
 
+void forward_and_stay(int steps, int time)
+{
+	int time_per_step = time / steps;
+	int i;
+	for (i = 0; i < steps;++i)
+	{
+		lcd.setCursor(12, 1);
+		lcd.print("    ");
+		lcd.setCursor(12, 1);
+		lcd.print("FWD");
 
+		myStepper.step(1);
+		lcd.setCursor(12, 1);
+		lcd.print("    ");
+		lcd.setCursor(12, 1);
+		lcd.print(i);
+
+		delay(time_per_step);
+		lcd.setCursor(0, 1);
+		lcd.print("     ");
+		lcd.setCursor(0, 1);
+		lcd.print(i*time_per_step);
+		
+
+
+
+		
+	}
+	lcd.setCursor(0, 1);
+	lcd.print("     ");
+	lcd.setCursor(0, 1);
+	lcd.print(i*time_per_step);
+	
+}
 
 
 void forward(int steps)
@@ -319,11 +352,12 @@ void loop() {
 
   if (isRun == true)
   {
-    stay(intvl_time);
+	  
+    //stay(intvl_time);
     expose(exp_time);
-
+	forward_and_stay(step, intvl_time);
     // step one revolution  in one direction:
-    forward(step);
+   // forward(step);
 
 
     // step one revolution in the other direction:
